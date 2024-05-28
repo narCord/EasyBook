@@ -1,13 +1,12 @@
-from django.shortcuts import render
-from django.http import HttpResponse
-from .serializers import UserRegistrationSerializer
-from django.contrib.auth.models import User
-from rest_framework import viewsets
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from .serializers import UserSerializer
 
-# Create your views here.
-def index(request):
-    return HttpResponse('Hola estas en la pagina principal de EasyBook')
-
-class UserRegistrationViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserRegistrationSerializer
+class CreateUserView(APIView):
+    def post(self, request, *args, **kwargs):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
