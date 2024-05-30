@@ -1,5 +1,4 @@
 import json
-from json import encoder
 
 from django.http import JsonResponse
 
