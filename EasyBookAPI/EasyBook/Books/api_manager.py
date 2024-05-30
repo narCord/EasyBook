@@ -18,20 +18,26 @@ class ApiManager:
     def book_search(self, query):
         url = f'https://openlibrary.org/search.json?q={query}&limit=1'
         response = requests.get(url, headers=self.headers)
-        json_data = response.json()
+        json_data = response.json().get('docs')[0]
 
-        self.author_name = json_data.get('docs')[0].get('author_name')[0]
-        self.first_publish_year = json_data.get('docs')[0].get('first_publish_year')
-        self.title = json_data.get('docs')[0].get('title')
-        self.subject = self.subject_selection(json_data.get('docs')[0].get('subject'))
-        self.first_sentence = json_data.get('docs')[0].get('first_sentence')[0]
+        self.author_name = json_data.get('author_name')[0]
+        self.first_publish_year = json_data.get('first_publish_year')
+        self.title = json_data.get('title')
+        try:
+           self.subject = self.subject_selection(json_data.get('subject'))
+        except TypeError:
+            self.subject = 'Undefined'
+        try:
+            self.first_sentence = json_data.get('first_sentence')[0]
+        except TypeError:
+            self.first_sentence = 'Undefined'
 
     def subject_selection(self, queried_book_subject_list):
         for item in queried_book_subject_list:
             if item in self.subject_list:
                 return item
 
-        return 'No valid subject found'
+        return 'Undefined'
 
 '''
 api_call = ApiManager()
