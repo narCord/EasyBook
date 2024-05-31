@@ -1,5 +1,7 @@
 import json
 from django.http import JsonResponse, HttpResponse
+from rest_framework.permissions import IsAuthenticated
+
 from .api_manager import ApiManager
 from .json_builder import JsonBuilder
 from .models import Book, BooksReadByUser, BooksAbandonedByUser, BooksToBeReadByUser, User
@@ -25,36 +27,18 @@ def book_search(request):
     return JsonResponse(json_response, status=200, safe=False)
 
 
-def add_to_read_list(request):
-    return None
+def testing(request, HttpRequest):
+    request = HttpRequest()
+    # user = Book.objects.get(pk=1)
+    # print(user.title)
+    # print(user.first_publish_year)
+    # print(user.author_name)
+    # print(user.subject)
+    # print(user.first_sentence)
 
+    permission = IsAuthenticated()
+    if permission.has_permission(None, request):
+        return JsonResponse({'MENSAJE': 'acceso concedido'}, status=200)
+    else:
+        return JsonResponse({'mensaje': 'sin permiso'}, status=400)
 
-def add_to_abandoned_list(request):
-    return None
-
-
-def add_to_tbr_list(request):
-    return None
-
-
-def del_from_read_list(request):
-    return None
-
-
-def del_from_abandoned_list(request):
-    return None
-
-
-def del_from_tbr_list(request):
-    return None
-
-
-def testing(request):
-    user = Book.objects.get(pk=1)
-    print(user.title)
-    print(user.first_publish_year)
-    print(user.author_name)
-    print(user.subject)
-    print(user.first_sentence)
-
-    return HttpResponse(status=200)
