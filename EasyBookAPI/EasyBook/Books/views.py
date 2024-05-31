@@ -1,10 +1,7 @@
-from django.contrib.auth import login
-from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
-
-from .serializers import UserSerializer, LoginSerializer
+from .serializers import UserSerializer
 from rest_framework.permissions import IsAuthenticated
 
 
@@ -17,6 +14,9 @@ class CreateUserView(APIView):
         return Response(serializer.errors, status=400)
 
 
+#http://127.0.0.1:8000/api/logout/
+#Postman Headers: Authorization, Bearer <access token>
+#body {"refresh": "<refresh token>"}
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
