@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+
 # Create your models here.
 
 class Book(models.Model):
@@ -13,6 +14,7 @@ class Book(models.Model):
     def __str__(self):
         return self.title
 
+
 class BooksReadByUser(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
@@ -22,6 +24,7 @@ class BooksReadByUser(models.Model):
     def __str__(self):
         return f'{self.book.title} - {self.user.username}'
 
+
 class BooksAbandonedByUser(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
@@ -29,6 +32,7 @@ class BooksAbandonedByUser(models.Model):
 
     def __str__(self):
         return f'{self.book.title} - {self.user.username}'
+
 
 class BooksToBeReadByUser(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

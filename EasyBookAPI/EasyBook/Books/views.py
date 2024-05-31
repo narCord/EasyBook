@@ -1,3 +1,4 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -40,41 +41,65 @@ class LogoutView(APIView):
 class AddToReadList(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request):
-        user = request.user
-        username = user.username
-        password = user.password
-        return JsonResponse({f'{username}': f'{password}'}, status=200)
+    def put(self, request):
+        query = request.GET.get('q')
+        check_and_add_book(query)
+
+        request_user = request.user
+        # request.data.get('rating')
+        # request.data.get('note')
+        book_read, created = BooksReadByUser.objects.update_or_create(
+            user=request_user,
+            book=Book.objects.get(title__iexact=query),
+            rating=request.data.get('rating'),
+            note=request.data.get('note')
+        )
+        return JsonResponse({'status': 'exito'}, status=200)
+
+    # def get(self, request):
+    #     user = request.user
+    #     username = user.username
+    #     password = user.password
+    #     return JsonResponse({f'{username}': f'{password}'}, status=200)
 
 
 class AddToAbandonedList(APIView):
     permission_classes = [IsAuthenticated]
-    pass
+
+    def put(self, request):
+        query = request.GET.get('q')
 
 
 class AddToToBeReadList(APIView):
     permission_classes = [IsAuthenticated]
-    pass
+
+    def put(self, request):
+        query = request.GET.get('q')
 
 
 class RemoveFromReadList(APIView):
     permission_classes = [IsAuthenticated]
-    pass
+
+    def put(self, request):
+        query = request.GET.get('q')
 
 
 class RemoveFromAbandonedList(APIView):
     permission_classes = [IsAuthenticated]
-    pass
+
+    def put(self, request):
+        query = request.GET.get('q')
 
 
 class RemoveFromToBeReadList(APIView):
     permission_classes = [IsAuthenticated]
-    pass
+    def put(self, request):
+        query = request.GET.get('q')
 
 
 class TestingClass(APIView):
     def get(self, request):
-        pass
+        query = request.GET.get('q')
 
 
 class BookSearch(APIView):
@@ -87,12 +112,44 @@ class BookSearch(APIView):
                               api_test.first_sentence)
         json_response = json.loads(builder.to_json())
 
-        # new_book = Book(author_name=api_test.author_name,
-        #                 first_publish_year=api_test.first_publish_year,
-        #                 title=api_test.title,
-        #                 subject=api_test.subject,
-        #                 first_sentence=api_test.first_sentence)
-        #
-        # new_book.save()
+        return JsonResponse(json_response, status=200, safe=False)
+
+
+class SearchAndAddBookToDatabase(APIView):
+    def get(self, request):
+        query = request.GET.get('q')
+
+        json_response = check_and_add_book(query)
 
         return JsonResponse(json_response, status=200, safe=False)
+
+
+def check_and_add_book(query):
+    if Book.objects.filter(title__iexact=query).exists():
+        book = Book.objects.get(title__iexact=query)
+        return {'status': 'The book already exists in the database',
+                'book': {
+                    'author_name': book.author_name,
+                    'first_publish_year': book.first_publish_year,
+                    'title': book.title,
+                    'subject': book.subject,
+                    'first_sentence': book.first_sentence
+                    }
+                }
+    else:
+        #
+        api_test = ApiManager()
+        api_test.book_search(query)
+        builder = JsonBuilder(api_test.author_name,
+                              api_test.first_publish_year,
+                              api_test.title,
+                              api_test.subject,
+                              api_test.first_sentence)
+        json_response = json.loads(builder.to_json())
+        new_book = Book(author_name=api_test.author_name,
+                        first_publish_year=api_test.first_publish_year,
+                        title=api_test.title,
+                        subject=api_test.subject,
+                        first_sentence=api_test.first_sentence)
+        new_book.save()
+        return json_response
