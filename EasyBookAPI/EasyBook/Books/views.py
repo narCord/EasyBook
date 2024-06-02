@@ -1,4 +1,5 @@
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.serializers import serialize
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
@@ -157,19 +158,88 @@ class RemoveFromToBeReadList(APIView):
         return JsonResponse({'status': 'Book removed from list'}, status=200)
 
 
-class ShowToBeReadList:
+class ShowToBeReadList(APIView):
     def get(self, request):
         username = request.GET.get('username')
         try:
             user = User.objects.get(username__iexact=username)
         except User.DoesNotExist:
-            return JsonResponse({'error': 'User not found'})
+            return JsonResponse({'error': 'User not found'}, status=404)
 
-class ShowAbandonedList:
+        book_list = BooksToBeReadByUser.objects.filter(user=user)
+        
+        json_response = []
+        for i in book_list:
+            book_dict = {
+                'book': {
+                    'author_name': i.book.author_name,
+                    'first_publish_year': i.book.first_publish_year,
+                    'title': i.book.title,
+                    'subject': i.book.subject,
+                    'first_sentence': i.book.first_sentence
+                },
+                'note': i.note,
+                'rating': i.rating
+            }
+            json_response.append(book_dict)
+
+        return JsonResponse(json_response, safe=False, status=200)
 
 
-class ShowReadList:
+class ShowAbandonedList(APIView):
+    def get(self, request):
+        username = request.GET.get('username')
+        try:
+            user = User.objects.get(username__iexact=username)
+        except User.DoesNotExist:
+            return JsonResponse({'error': 'User not found'}, status=404)
 
+        book_list = BooksAbandonedByUser.objects.filter(user=user)
+
+        json_response = []
+        for i in book_list:
+            book_dict = {
+                'book': {
+                    'author_name': i.book.author_name,
+                    'first_publish_year': i.book.first_publish_year,
+                    'title': i.book.title,
+                    'subject': i.book.subject,
+                    'first_sentence': i.book.first_sentence
+                },
+                'note': i.note,
+                'rating': i.rating
+            }
+            json_response.append(book_dict)
+
+        return JsonResponse(json_response, safe=False, status=200)
+
+
+class ShowReadList(APIView):
+    def get(self, request):
+        username = request.GET.get('username')
+        try:
+            user = User.objects.get(username__iexact=username)
+        except User.DoesNotExist:
+            return JsonResponse({'error': 'User not found'}, status=404)
+
+        book_list = BooksReadByUser.objects.filter(user=user)
+
+        json_response = []
+        for i in book_list:
+            book_dict = {
+                'book': {
+                    'author_name': i.book.author_name,
+                    'first_publish_year': i.book.first_publish_year,
+                    'title': i.book.title,
+                    'subject': i.book.subject,
+                    'first_sentence': i.book.first_sentence
+                },
+                'note': i.note,
+                'rating': i.rating
+            }
+            json_response.append(book_dict)
+
+        return JsonResponse(json_response, safe=False, status=200)
 
 
 class TestingClass(APIView):
