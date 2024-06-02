@@ -17,5 +17,5 @@ urlpatterns = [
     path('search/', BookSearch.as_view(), name='book_search'),
     path('add/', SearchAndAddBookToDatabase.as_view(), name='search_and_add_book'),
     path('testing/', TestingClass.as_view(), name='testing'),
-    path('cancer/', test.cancer),
+    path('test/', test.testendpoint),
 ]

@@ -3,17 +3,17 @@ from django.http import JsonResponse
 from .models import Book, BooksReadByUser
 
 
-def cancer(request):
+def testendpoint(request):
     # book = Book.objects.all()
     # print(book)
 
-    mierdon = BooksReadByUser.objects.all()
-    print(mierdon)
-    BooksReadByUser.objects.all().delete()
-    # mierda.delete()
+    # user = request.user
+    # print(user.id)
+    test = BooksReadByUser.objects.all()
+    print(test)
 
 
-    return JsonResponse({'puta': 'mierda'}, safe=False)
+    return JsonResponse({'ay': 'perdon'}, safe=False)
 
 
 

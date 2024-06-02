@@ -1,5 +1,6 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -46,21 +47,20 @@ class AddToReadList(APIView):
         check_and_add_book(query)
 
         request_user = request.user
-        # request.data.get('rating')
-        # request.data.get('note')
-        book_read, created = BooksReadByUser.objects.update_or_create(
+        note = request.data.get('note')
+        rating = request.data.get('rating')
+        rating = int(rating) if rating else None
+
+        book_read, created = BooksReadByUser.objects.get_or_create(
             user=request_user,
             book=Book.objects.get(title__iexact=query),
-            rating=request.data.get('rating'),
-            note=request.data.get('note')
+            rating=rating,
+            note=note
         )
-        return JsonResponse({'status': 'exito'}, status=200)
-
-    # def get(self, request):
-    #     user = request.user
-    #     username = user.username
-    #     password = user.password
-    #     return JsonResponse({f'{username}': f'{password}'}, status=200)
+        if created:
+            return JsonResponse({'status': 'Book added to list'}, status=200)
+        else:
+            return JsonResponse({'status': 'Something has gone wrong'}, status=400)
 
 
 class AddToAbandonedList(APIView):
@@ -68,6 +68,20 @@ class AddToAbandonedList(APIView):
 
     def put(self, request):
         query = request.GET.get('q')
+        check_and_add_book(query)
+
+        request_user = request.user
+        note = request.data.get('note')
+
+        book_read, created = BooksAbandonedByUser.objects.get_or_create(
+            user=request_user,
+            book=Book.objects.get(title__iexact=query),
+            note=note
+        )
+        if created:
+            return JsonResponse({'status': 'Book added to list'}, status=200)
+        else:
+            return JsonResponse({'status': 'Something has gone wrong'}, status=400)
 
 
 class AddToToBeReadList(APIView):
@@ -75,26 +89,87 @@ class AddToToBeReadList(APIView):
 
     def put(self, request):
         query = request.GET.get('q')
+        check_and_add_book(query)
+
+        request_user = request.user
+        note = request.data.get('note')
+
+        book_read, created = BooksToBeReadByUser.objects.get_or_create(
+            user=request_user,
+            book=Book.objects.get(title__iexact=query),
+            note=note
+        )
+        if created:
+            return JsonResponse({'status': 'Book added to list'}, status=200)
+        else:
+            return JsonResponse({'status': 'Something has gone wrong'}, status=400)
 
 
 class RemoveFromReadList(APIView):
     permission_classes = [IsAuthenticated]
 
-    def put(self, request):
+    def delete(self, request):
         query = request.GET.get('q')
+
+        request_user = request.user
+        request_book = Book.objects.get(title__iexact=query)
+
+        book_read_instance = get_object_or_404(BooksReadByUser,
+                                               user_id=request_user.id,
+                                               book_id=request_book.id)
+        book_read_instance.delete()
+
+        return JsonResponse({'status': 'Book removed from list'}, status=200)
+
 
 
 class RemoveFromAbandonedList(APIView):
     permission_classes = [IsAuthenticated]
 
-    def put(self, request):
+    def delete(self, request):
         query = request.GET.get('q')
+
+        request_user = request.user
+        request_book = Book.objects.get(title__iexact=query)
+
+        book_abandoned_instance = get_object_or_404(BooksAbandonedByUser,
+                                               user_id=request_user.id,
+                                               book_id=request_book.id)
+        book_abandoned_instance.delete()
+
+        return JsonResponse({'status': 'Book removed from list'}, status=200)
 
 
 class RemoveFromToBeReadList(APIView):
     permission_classes = [IsAuthenticated]
-    def put(self, request):
+
+    def delete(self, request):
         query = request.GET.get('q')
+
+        request_user = request.user
+        request_book = Book.objects.get(title__iexact=query)
+
+        book_tbr_instance = get_object_or_404(BooksToBeReadByUser,
+                                               user_id=request_user.id,
+                                               book_id=request_book.id)
+        book_tbr_instance.delete()
+
+        return JsonResponse({'status': 'Book removed from list'}, status=200)
+
+
+class ShowToBeReadList:
+    def get(self, request):
+        username = request.GET.get('username')
+        try:
+            user = User.objects.get(username__iexact=username)
+        except User.DoesNotExist:
+            return JsonResponse({'error': 'User not found'})
+
+class ShowAbandonedList:
+
+
+class ShowReadList:
+
 
 
 class TestingClass(APIView):

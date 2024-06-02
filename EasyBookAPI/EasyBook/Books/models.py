@@ -21,8 +21,11 @@ class BooksReadByUser(models.Model):
     rating = models.PositiveSmallIntegerField(null=True)
     note = models.CharField(max_length=2500, null=True)
 
+    class Meta:
+        unique_together = ('user', 'book')
+
     def __str__(self):
-        return f'{self.book.title} - {self.user.username}'
+        return f'{self.book.title} - {self.user.username} - {self.rating} - {self.note}'
 
 
 class BooksAbandonedByUser(models.Model):
@@ -30,8 +33,11 @@ class BooksAbandonedByUser(models.Model):
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
     note = models.CharField(max_length=2500, null=True)
 
+    class Meta:
+        unique_together = ('user', 'book')
+
     def __str__(self):
-        return f'{self.book.title} - {self.user.username}'
+        return f'{self.book.title} - {self.user.username} - {self.note}'
 
 
 class BooksToBeReadByUser(models.Model):
@@ -39,5 +45,8 @@ class BooksToBeReadByUser(models.Model):
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
     note = models.CharField(max_length=2500, null=True)
 
+    class Meta:
+        unique_together = ('user', 'book')
+
     def __str__(self):
-        return f'{self.book.title} - {self.user.username}'
+        return f'{self.book.title} - {self.user.username} - {self.note}'
