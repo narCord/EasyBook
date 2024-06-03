@@ -37,13 +37,3 @@ class ApiManager:
                 return item
 
         return 'Undefined'
-
-'''
-api_call = ApiManager()
-api_call.book_search('the lord of the rings')
-print(api_call.author_name)
-print(api_call.first_publish_year)
-print(api_call.title)
-print(api_call.subject)
-print(api_call.first_sentence)
-'''

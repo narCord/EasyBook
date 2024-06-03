@@ -1,12 +1,8 @@
-from django.core.exceptions import ObjectDoesNotExist
-from django.core.serializers import serialize
-from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import UserSerializer
-from rest_framework.permissions import IsAuthenticated
 import json
 from django.http import JsonResponse, HttpResponse
 from rest_framework.permissions import IsAuthenticated
@@ -123,7 +119,6 @@ class RemoveFromReadList(APIView):
         return JsonResponse({'status': 'Book removed from list'}, status=200)
 
 
-
 class RemoveFromAbandonedList(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -134,8 +129,8 @@ class RemoveFromAbandonedList(APIView):
         request_book = Book.objects.get(title__iexact=query)
 
         book_abandoned_instance = get_object_or_404(BooksAbandonedByUser,
-                                               user_id=request_user.id,
-                                               book_id=request_book.id)
+                                                    user_id=request_user.id,
+                                                    book_id=request_book.id)
         book_abandoned_instance.delete()
 
         return JsonResponse({'status': 'Book removed from list'}, status=200)
@@ -151,8 +146,8 @@ class RemoveFromToBeReadList(APIView):
         request_book = Book.objects.get(title__iexact=query)
 
         book_tbr_instance = get_object_or_404(BooksToBeReadByUser,
-                                               user_id=request_user.id,
-                                               book_id=request_book.id)
+                                              user_id=request_user.id,
+                                              book_id=request_book.id)
         book_tbr_instance.delete()
 
         return JsonResponse({'status': 'Book removed from list'}, status=200)
@@ -167,7 +162,7 @@ class ShowToBeReadList(APIView):
             return JsonResponse({'error': 'User not found'}, status=404)
 
         book_list = BooksToBeReadByUser.objects.filter(user=user)
-        
+
         json_response = []
         for i in book_list:
             book_dict = {
@@ -279,7 +274,7 @@ def check_and_add_book(query):
                     'title': book.title,
                     'subject': book.subject,
                     'first_sentence': book.first_sentence
-                    }
+                }
                 }
     else:
         #
