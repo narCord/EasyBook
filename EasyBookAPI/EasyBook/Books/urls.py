@@ -7,7 +7,6 @@ urlpatterns = [
     path('register/', CreateUserView.as_view(), name='register_user'),
     path('login/', TokenObtainPairView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
-    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('user/add/read/', AddToReadList.as_view(), name='add_to_read'),
     path('user/add/abandoned/', AddToAbandonedList.as_view(), name='add_to_abandoned'),
     path('user/add/toberead/', AddToToBeReadList.as_view(), name='add_to_toberead'),
