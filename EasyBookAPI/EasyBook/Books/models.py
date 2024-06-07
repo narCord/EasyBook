@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 class Book(models.Model):
     author_name = models.CharField(max_length=50)
     first_publish_year = models.PositiveSmallIntegerField(default=0)
-    title = models.CharField(max_length=100)
+    title = models.CharField(max_length=100, unique=True)
     subject = models.CharField(max_length=50)
     first_sentence = models.CharField(max_length=10000)
 
