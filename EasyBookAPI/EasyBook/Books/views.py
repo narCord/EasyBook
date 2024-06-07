@@ -277,7 +277,6 @@ def check_and_add_book(query):
                 }
                 }
     else:
-        #
         api_test = ApiManager()
         api_test.book_search(query)
         builder = JsonBuilder(api_test.author_name,
@@ -286,6 +285,7 @@ def check_and_add_book(query):
                               api_test.subject,
                               api_test.first_sentence)
         json_response = json.loads(builder.to_json())
+
         new_book = Book(author_name=api_test.author_name,
                         first_publish_year=api_test.first_publish_year,
                         title=api_test.title,
