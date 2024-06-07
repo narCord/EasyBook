@@ -55,7 +55,7 @@ class AddToReadList(APIView):
             note=note
         )
         if created:
-            return JsonResponse({'status': 'Book added to list'}, status=200)
+            return JsonResponse({'status': 'Book added to list'}, status=201)
         else:
             return JsonResponse({'status': 'Something has gone wrong'}, status=400)
 
@@ -76,7 +76,7 @@ class AddToAbandonedList(APIView):
             note=note
         )
         if created:
-            return JsonResponse({'status': 'Book added to list'}, status=200)
+            return JsonResponse({'status': 'Book added to list'}, status=201)
         else:
             return JsonResponse({'status': 'Something has gone wrong'}, status=400)
 
@@ -97,7 +97,7 @@ class AddToToBeReadList(APIView):
             note=note
         )
         if created:
-            return JsonResponse({'status': 'Book added to list'}, status=200)
+            return JsonResponse({'status': 'Book added to list'}, status=201)
         else:
             return JsonResponse({'status': 'Something has gone wrong'}, status=400)
 
